@@ -46,7 +46,6 @@ class Parser(val cmdlineArguments: CmdlineArguments) {
            "fcmpl" |
            "fconst" |
            "fdiv" |
-           "fdiv" |
            "fload" |
            "fmul" |
            "fneg" |
