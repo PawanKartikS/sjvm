@@ -5,8 +5,12 @@ import scala.collection.mutable
 class CmdlineArguments(args: Array[String]) {
   var mainClass: String = _
   var rtPath: String = _
+
+  // cmd line args
   var opcodeVerbose = false
   var showClassFields = false
+  var showUnusedVarCount = false
+  
   private val classFiles = mutable.ArrayBuffer[String]()
 
   args.foreach(collectArg)
@@ -44,6 +48,7 @@ class CmdlineArguments(args: Array[String]) {
     arg match {
       case "-jvm:OpcodeVerbose" => opcodeVerbose = true
       case "-jvm:ShowClassFields" => showClassFields = true
+      case "-jvm:ShowUnusedVarCount" => showUnusedVarCount = true
 
       case _ =>
         if (arg.contains("-jvm:MainClass=")) {
