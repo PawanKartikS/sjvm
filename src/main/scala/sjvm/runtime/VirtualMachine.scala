@@ -12,6 +12,7 @@ class VirtualMachine(cmdlineArguments: CmdlineArguments, classes: mutable.HashMa
   private final val PSVM = "main([Ljava/lang/String;)V"
 
   class Frame {
+    final val accessCount = mutable.HashMap[Int, Int]()
     final var localvar = new Array[Any](DEFAULT_ARR_SIZE)
     final val stack = mutable.Stack[Any]()
 
@@ -201,12 +202,22 @@ class VirtualMachine(cmdlineArguments: CmdlineArguments, classes: mutable.HashMa
     if (n >= frame.localvar.length)
       throw new IllegalArgumentException("n exceeds buffer capacity")
 
+    frame.accessCount.get(n) match {
+      case Some(_) => frame.accessCount.update(n, frame.accessCount(n) + 1)
+      case _ => frame.accessCount.put(n, 1)
+    }
+
     frame.localvar(n) = pop()
   }
 
   private def toStack(n: Int): Unit = {
     if (n >= frame.localvar.length)
       throw new IllegalArgumentException("n exceeds buffer capacity")
+
+    frame.accessCount.get(n) match {
+      case Some(_) => frame.accessCount.update(n, frame.accessCount(n) + 1)
+      case _ => frame.accessCount.put(n, 1)
+    }
 
     push(frame.localvar(n))
   }
@@ -511,6 +522,12 @@ class VirtualMachine(cmdlineArguments: CmdlineArguments, classes: mutable.HashMa
       }
     }
 
+    if (cmdlineArguments.showUnusedVarCount) {
+      val unusedVars = frame.accessCount.filter(p => p._2 == 1).size
+      if (unusedVars >= 1)
+        println(s"$unusedVars unused var in $methodName")
+    }
+    
     frames.pop()
     if (frames.nonEmpty)
       frame = frames.top
