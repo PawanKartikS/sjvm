@@ -2,12 +2,12 @@ package sjvm.runtime
 
 import com.sun.org.apache.bcel.internal.classfile.ConstantPool
 import sjvm.CmdlineArguments
-import sjvm.classfile.{Instruction, JClass, Opcode}
+import sjvm.classfile.{Instruction, JClass, Parser, Opcode}
 
 import scala.collection.mutable
 import scala.util.control.Breaks.{break, breakable}
 
-class VirtualMachine(cmdlineArguments: CmdlineArguments, classes: mutable.HashMap[String, JClass]) {
+class VirtualMachine(cmdlineArguments: CmdlineArguments) {
   private final val DEFAULT_ARR_SIZE = 128
   private final val PSVM = "main([Ljava/lang/String;)V"
 
@@ -31,6 +31,8 @@ class VirtualMachine(cmdlineArguments: CmdlineArguments, classes: mutable.HashMa
   private var frame: Frame = _
   private var jmpOffset: mutable.HashMap[Int, Int] = _
 
+  private val classes = mutable.HashMap[String, JClass]()
+  private val classFiles = cmdlineArguments.getClassFiles
   private val frames = mutable.Stack[Frame]()
   private val instances = mutable.HashMap[String, Instance]()
 
@@ -180,6 +182,20 @@ class VirtualMachine(cmdlineArguments: CmdlineArguments, classes: mutable.HashMa
       throw new IllegalArgumentException("cannot pop, stack is empty")
 
     frame.stack.pop()
+  }
+
+  private def readyClass(className: String): Unit = {
+    classes.get(className) match {
+      case Some(_) => return
+      case _ =>
+        for (classFile <- classFiles) {
+          if (classFile.contains(s"$className.class")) {
+            var jclass = Parser.parse(classFile)
+            classes.put(jclass.name, jclass)
+            return
+          }
+        }
+    }
   }
 
   private def resolveToNameType(cpstring: String): (String, String) = {
@@ -466,8 +482,9 @@ class VirtualMachine(cmdlineArguments: CmdlineArguments, classes: mutable.HashMa
         val cpool = getCpool(className)
 
         val instname = cpool.constantToString(cpool.getConstant(index))
-        val instance = new Instance(instname, classes(instname).getFields)
+        readyClass(instname)
 
+        val instance = new Instance(instname, classes(instname).getFields)
         instance.init()
 
         push(instance)
@@ -495,6 +512,8 @@ class VirtualMachine(cmdlineArguments: CmdlineArguments, classes: mutable.HashMa
   }
 
   private def evalMethod(className: String, methodName: String): Unit = {
+    readyClass(className)
+
     val jmethod = classes(className).getMethod(methodName)
     if (jmethod == null)
       throw new IllegalArgumentException(s"cannot find method $methodName")

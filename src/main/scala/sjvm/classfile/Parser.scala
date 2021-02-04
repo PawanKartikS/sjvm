@@ -5,7 +5,7 @@ import sjvm.CmdlineArguments
 
 import scala.util.control.Breaks.{break, breakable}
 
-class Parser(val cmdlineArguments: CmdlineArguments) {
+object Parser {
   private final val TOKENIZE_REGEX = "\\s+"
   private final val METHOD_SKIP_PARSE = "max_stack"
   private final val METHOD_STOP_PARSE = "Attribute(s)"
