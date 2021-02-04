@@ -9,6 +9,7 @@ class CmdlineArguments(args: Array[String]) {
   // cmd line args
   var opcodeVerbose = false
   var showClassFields = false
+  var showUnusedClasses = false
   var showUnusedVarCount = false
   
   private val classFiles = mutable.ArrayBuffer[String]()
@@ -48,6 +49,7 @@ class CmdlineArguments(args: Array[String]) {
     arg match {
       case "-jvm:OpcodeVerbose" => opcodeVerbose = true
       case "-jvm:ShowClassFields" => showClassFields = true
+      case "-jvm:ShowUnusedClasses" => showUnusedClasses = true
       case "-jvm:ShowUnusedVarCount" => showUnusedVarCount = true
 
       case _ =>
