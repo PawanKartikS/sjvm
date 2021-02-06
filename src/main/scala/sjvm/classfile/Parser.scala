@@ -99,7 +99,7 @@ object Parser {
     breakable {
       for (i <- tokens.indices) {
         if (tokens(i)(0) == '/')
-          break
+          break()
 
         i match {
           case 0 => index = parseOffset(tokens(i))

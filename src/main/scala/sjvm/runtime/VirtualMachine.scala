@@ -16,7 +16,7 @@ class VirtualMachine(cmdlineArguments: CmdlineArguments) {
     final var localvar = new Array[Any](DEFAULT_ARR_SIZE)
     final val stack = mutable.Stack[Any]()
 
-    def this(args: Array[Any], isStaticContext: Boolean) {
+    def this(args: Array[Any], isStaticContext: Boolean) = {
       this()
       if (args.length > DEFAULT_ARR_SIZE)
         localvar = new Array[Any](DEFAULT_ARR_SIZE + args.length)
@@ -531,7 +531,7 @@ class VirtualMachine(cmdlineArguments: CmdlineArguments) {
       while (i < instructions.length) {
         val instr = instructions(i)
         if (instr.isEndOfMethod)
-          break
+          break()
 
         if (instr.isFunctionCall) {
           invokeMethod(instr)
