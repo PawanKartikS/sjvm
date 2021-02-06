@@ -576,6 +576,11 @@ class VirtualMachine(cmdlineArguments: CmdlineArguments) {
 
     println()
 
+    if (cmdlineArguments.showUnusedClasses) {
+      if (classes.size != classFiles.length)
+        println("jvm: Unused classes detected")
+    }
+
     if (!cmdlineArguments.showClassFields)
       return
 
