@@ -47,6 +47,12 @@ class CmdlineArguments(args: Array[String]) {
 
   def parseArgument(arg: String): Unit = {
     arg match {
+      case "-jvm:ShowAllWarns" =>
+        opcodeVerbose = true
+        showClassFields = true
+        showUnusedClasses = true
+        showUnusedVarCount = true
+
       case "-jvm:OpcodeVerbose" => opcodeVerbose = true
       case "-jvm:ShowClassFields" => showClassFields = true
       case "-jvm:ShowUnusedClasses" => showUnusedClasses = true
