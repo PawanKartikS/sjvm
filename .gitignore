@@ -1,7 +1,11 @@
+# Compiled files
 out/*
 
+# Something wrong with metals?
+null/*
+
+# IDEs and editors
 .idea/*
 .metals/*
 .vscode/*
-
 sjvm.iml
