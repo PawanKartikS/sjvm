@@ -30,7 +30,6 @@ object Parser {
            "lreturn" |
            "lshl" |
            "lshr" |
-           "lstore" |
            "lsub" |
            "lushr" |
            "lxor" =>
