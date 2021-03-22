@@ -50,7 +50,6 @@ object Parser {
            "fneg" |
            "frem" |
            "freturn" |
-           "fstore" |
            "fsub" =>
         token.toFloat
 
@@ -66,7 +65,6 @@ object Parser {
            "dneg" |
            "drem" |
            "dreturn" |
-           "dstore" |
            "dsub" =>
         token.toDouble
 
