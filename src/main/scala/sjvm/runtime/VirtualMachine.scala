@@ -444,7 +444,8 @@ class VirtualMachine(cmdlineArguments: CmdlineArguments) {
 
         incrementBy(n, by)
 
-      case "iload" |
+      case "fload" |
+           "iload" |
            "lload" =>
         val n = instruction.getOperand[Int](0)
         toStack(n)
@@ -484,7 +485,7 @@ class VirtualMachine(cmdlineArguments: CmdlineArguments) {
         val cpoolConstant = cpool.getConstant(cpoolOffset)
 
         cpoolConstant match {
-          case _: ConstantFloat => push(instruction.getOperand[Float](0))
+          case _: ConstantFloat => push(instruction.getOperand[String](0).toFloat)
           case _: ConstantString => push(instruction.getOperand[String](0))
           case _ => throw new IllegalArgumentException(s"could not match for type at ldc")
         }
