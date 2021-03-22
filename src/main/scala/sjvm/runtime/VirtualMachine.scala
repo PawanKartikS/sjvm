@@ -333,7 +333,8 @@ class VirtualMachine(cmdlineArguments: CmdlineArguments) {
         val x2 = pop().asInstanceOf[Double]
         push(x2 % x1)
 
-      case "dreturn" |
+      case "areturn" |
+           "dreturn" |
            "freturn" |
            "ireturn" |
            "lreturn" =>
@@ -566,7 +567,7 @@ class VirtualMachine(cmdlineArguments: CmdlineArguments) {
       return
     }
 
-    val (instance, method) = resolveToNameType(instruction.getOperand[String](0))
+    val (instance, method) = resolveToNameType(inv)
     val ty = instruction.getOperand[String](1)
 
     unpackArguments(ty, method.equals(Opcode.STATIC_METHOD))
