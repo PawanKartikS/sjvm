@@ -1,6 +1,6 @@
 package sjvm.runtime
 
-import com.sun.org.apache.bcel.internal.classfile.ConstantPool
+import com.sun.org.apache.bcel.internal.classfile.{ConstantFloat, ConstantString, ConstantPool}
 import sjvm.CmdlineArguments
 import sjvm.classfile.{Instruction, JClass, Parser, Opcode}
 
@@ -479,7 +479,15 @@ class VirtualMachine(cmdlineArguments: CmdlineArguments) {
         push(pop().asInstanceOf[Long].toDouble)
 
       case "ldc" =>
-        push(instruction.getOperand[String](0))
+        val cpool = getCpool(className)
+        val cpoolOffset = instruction.getOperand[Int](1)
+        val cpoolConstant = cpool.getConstant(cpoolOffset)
+
+        cpoolConstant match {
+          case _: ConstantFloat => push(instruction.getOperand[Float](0))
+          case _: ConstantString => push(instruction.getOperand[String](0))
+          case _ => throw new IllegalArgumentException(s"could not match for type at ldc")
+        }
 
       case "ldc2_w" =>
         push(instruction.getOperand[Long](0))
