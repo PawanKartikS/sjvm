@@ -444,7 +444,8 @@ class VirtualMachine(cmdlineArguments: CmdlineArguments) {
 
         incrementBy(n, by)
 
-      case "iload" =>
+      case "iload" |
+           "lload" =>
         val n = instruction.getOperand[Int](0)
         toStack(n)
 
@@ -467,6 +468,15 @@ class VirtualMachine(cmdlineArguments: CmdlineArguments) {
         val shiftCount = pop().asInstanceOf[Int]
         val n = pop().asInstanceOf[Int]
         push(n >> shiftCount)
+
+      case "l2i" =>
+        push(pop().asInstanceOf[Long].toInt)
+
+      case "l2f" =>
+        push(pop().asInstanceOf[Long].toFloat)
+
+      case "l2d" =>
+        push(pop().asInstanceOf[Long].toDouble)
 
       case "ldc" =>
         push(instruction.getOperand[String](0))
