@@ -45,7 +45,6 @@ object Parser {
            "fcmpl" |
            "fconst" |
            "fdiv" |
-           "fload" |
            "fmul" |
            "fneg" |
            "frem" |
