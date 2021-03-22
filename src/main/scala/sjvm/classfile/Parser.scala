@@ -21,8 +21,8 @@ object Parser {
            "lastore" |
            "lcmp" |
            "lconst" |
+           "ldc2_w" |
            "ldiv" |
-           "lload" |
            "lmul" |
            "lneg" |
            "lor" |
