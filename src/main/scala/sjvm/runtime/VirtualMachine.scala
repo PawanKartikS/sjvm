@@ -275,6 +275,7 @@ class VirtualMachine(cmdlineArguments: CmdlineArguments) {
         push(arr.length)
 
       case "astore" |
+           "dstore" |
            "fstore" |
            "istore" |
            "lstore" =>
