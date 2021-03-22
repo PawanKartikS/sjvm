@@ -190,7 +190,7 @@ class VirtualMachine(cmdlineArguments: CmdlineArguments) {
       case _ =>
         for (classFile <- classFiles) {
           if (classFile.contains(s"$className.class")) {
-            var jclass = Parser.parse(classFile)
+            var jclass = Parser.parse(classFile, cmdlineArguments.parseVerbose)
             classes.put(jclass.name, jclass)
             return true
           }

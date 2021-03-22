@@ -72,7 +72,10 @@ object Parser {
     }
   }
 
-  private def parseInstruction(line: String): Instruction = {
+  private def parseInstruction(line: String, parseVerbose: Boolean): Instruction = {
+    if (parseVerbose)
+      println(s"Parser.scala: Line - [${line}]")
+
     val parseOffset = (token: String) => {
       token.substring(0, token.length - 1).toInt
     }
@@ -134,7 +137,7 @@ object Parser {
     instruction
   }
 
-  private def parseMethod(method: Method): JMethod = {
+  private def parseMethod(method: Method, parseVerbose: Boolean): JMethod = {
     val lookupSignature = s"${method.getName}${method.getSignature}"
     val jmethod = new JMethod(lookupSignature)
 
@@ -147,7 +150,7 @@ object Parser {
       if (instruction.contains(METHOD_STOP_PARSE))
         return jmethod
 
-      val instr = parseInstruction(instruction)
+      val instr = parseInstruction(instruction, parseVerbose)
       jmethod.addInstruction(instr)
       jmethod.jmpOffset.put(instr.index, i)
 
@@ -157,7 +160,7 @@ object Parser {
     throw new IllegalArgumentException(s"invalid class file - expecting attribute(s)")
   }
 
-  def parse(classFile: String): JClass = {
+  def parse(classFile: String, parseVerbose: Boolean = false): JClass = {
     val pclass = Decompiler.decompile(classFile)
     val jclass = new JClass(pclass.getClassName)
 
@@ -167,7 +170,7 @@ object Parser {
     val methods = pclass.getMethods
 
     for (method <- methods) {
-      val jmethod = parseMethod(method)
+      val jmethod = parseMethod(method, parseVerbose)
       jclass.newMethod(jmethod.name, jmethod)
     }
 
