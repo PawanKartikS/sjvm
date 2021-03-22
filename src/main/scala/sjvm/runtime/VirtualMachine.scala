@@ -469,6 +469,9 @@ class VirtualMachine(cmdlineArguments: CmdlineArguments) {
       case "ldc" =>
         push(instruction.getOperand[String](0))
 
+      case "ldc2_w" =>
+        push(instruction.getOperand[Long](0))
+
       case "lshl" =>
         val shiftCount = pop().asInstanceOf[Int]
         val n = pop().asInstanceOf[Long]
