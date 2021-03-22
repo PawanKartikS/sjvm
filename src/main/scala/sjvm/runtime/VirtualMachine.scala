@@ -382,6 +382,18 @@ class VirtualMachine(cmdlineArguments: CmdlineArguments) {
           case _ => throw new RuntimeException(s"cannot look up jump offset for $n")
         }
 
+      case "i2d" =>
+        val n = pop().asInstanceOf[Int]
+        push(n.toDouble)
+
+      case "i2f" =>
+        val n = pop().asInstanceOf[Int]
+        push(n.toFloat)
+
+      case "i2l" =>
+        val n = pop().asInstanceOf[Int]
+        push(n.toLong)
+
       case "iconst" =>
         push(instruction.getOperand[Int](0))
 
