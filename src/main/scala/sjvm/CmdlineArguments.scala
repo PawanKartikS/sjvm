@@ -3,7 +3,7 @@ package sjvm
 import scala.collection.mutable
 
 class CmdlineArguments(args: Array[String]) {
-  var mainClass: String = _
+  var mainClass = "Main"
   var rtPath: String = _
 
   // cmd line args
@@ -16,9 +16,6 @@ class CmdlineArguments(args: Array[String]) {
   private val classFiles = mutable.ArrayBuffer[String]()
 
   args.foreach(collectArg)
-
-  if (mainClass == null)
-    throw new IllegalArgumentException("cannot possibly init jvm, missing main class")
 
   if (rtPath == null)
     println("cannot possibly fully init jvm, missing rt path")
