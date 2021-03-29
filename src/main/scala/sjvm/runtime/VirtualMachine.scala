@@ -88,7 +88,15 @@ class VirtualMachine(cmdlineArguments: CmdlineArguments) {
     })
   }
 
-  private def math1(opcode: String): Boolean = {
+  private def cmp(opcode: String): Boolean = {
+    val idx = opcode.indexOf('_')
+    if (idx == -1)
+      return cmp1(opcode)
+    else
+      return cmp2(opcode)
+  }
+
+  private def cmp1(opcode: String): Boolean = {
     val x = pop().asInstanceOf[Int]
 
     opcode match {
@@ -107,27 +115,11 @@ class VirtualMachine(cmdlineArguments: CmdlineArguments) {
     }
   }
 
-  private def math2(opcode: String): Boolean = {
+  private def cmp2(opcode: String): Boolean = {
     val x1 = pop().asInstanceOf[Int]
     val x2 = pop().asInstanceOf[Int]
 
     opcode match {
-      case "iadd" =>
-        push(x1 + x2)
-        false
-
-      case "idiv" =>
-        push(x2 / x1)
-        false
-
-      case "imul" =>
-        push(x1 * x2)
-        false
-
-      case "isub" =>
-        push(x2 - x1)
-        false
-
       case "if_icmpeq" => x1 == x2
       case "if_icmpne" => x1 != x2
       case "if_icmplt" => x2 < x1
@@ -135,18 +127,22 @@ class VirtualMachine(cmdlineArguments: CmdlineArguments) {
       case "if_icmpgt" => x2 > x1
       case "if_icmpge" => x2 >= x1
 
-      case "iand" =>
-        push(x1 & x2)
-        false
+      case _ => throw new IllegalArgumentException(s"invalid opcode $opcode")
+    }
+  }
 
-      case "ior" =>
-        push(x1 | x2)
-        false
+  private def math(opcode: String): Unit = {
+    val x1 = pop().asInstanceOf[Int]
+    val x2 = pop().asInstanceOf[Int]
 
-      case "ixor" =>
-        push(x1 ^ x2)
-        false
-
+    opcode match {
+      case "iadd" => push(x1 + x2)
+      case "idiv" => push(x2 / x1)
+      case "imul" => push(x1 * x2)
+      case "isub" => push(x2 - x1)
+      case "iand" => push(x1 & x2)
+      case "ior"  => push(x1 | x2)
+      case "ixor" => push(x1 ^ x2)
       case _ => throw new IllegalArgumentException(s"invalid opcode $opcode")
     }
   }
@@ -404,25 +400,10 @@ class VirtualMachine(cmdlineArguments: CmdlineArguments) {
            "idiv" |
            "imul" |
            "isub" |
-           "if_icmpeq" |
-           "if_icmpne" |
-           "if_icmplt" |
-           "if_icmple" |
-           "if_icmpgt" |
-           "if_icmpge" |
            "iand" |
-           "ior" |
+           "ior"  |
            "ixor" =>
-        // Jump only if condition is satisfied
-        if (math2(instruction.opcode)) {
-          val n = instruction.getOperand[Int](0)
-          val jmp = jmpOffset.get(n)
-
-          jmp match {
-            case Some(_) => return jmp.get
-            case _ => throw new RuntimeException(s"cannot look up jump offset for $n")
-          }
-        }
+        math(instruction.opcode)
 
       case "ifeq" |
            "ifne" |
@@ -430,9 +411,15 @@ class VirtualMachine(cmdlineArguments: CmdlineArguments) {
            "ifle" |
            "ifgt" |
            "ifge" |
+           "if_icmpeq" |
+           "if_icmpne" |
+           "if_icmplt" |
+           "if_icmple" |
+           "if_icmpgt" |
+           "if_icmpge" |
            "ineg" =>
         // Jump only if condition is satisfied
-        if (math1(instruction.opcode)) {
+        if (cmp(instruction.opcode)) {
           val n = instruction.getOperand[Int](0)
           val jmp = jmpOffset.get(n)
 
