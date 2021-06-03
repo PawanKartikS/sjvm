@@ -5,6 +5,7 @@ import scala.collection.mutable
 class CmdlineArguments(args: Array[String]) {
   var mainClass = "Main"
   var rtPath: String = _
+  var classpath: String = _
 
   // cmd line args
   var parseVerbose = false
@@ -20,10 +21,11 @@ class CmdlineArguments(args: Array[String]) {
   if (rtPath == null)
     println("cannot possibly fully init jvm, missing rt path")
 
+  if (classpath == null || classpath.isEmpty)
+      throw new IllegalArgumentException("classpath is unspecified")
+
   private def collectArg(arg: String): Unit = {
-    if (isAClassFile(arg)) {
-      classFiles += arg
-    } else if (isASwitch(arg)) {
+    if (isASwitch(arg)) {
       parseArgument(arg)
     } else {
       println(s"skipping unknown arg - $arg")
@@ -32,11 +34,6 @@ class CmdlineArguments(args: Array[String]) {
 
   def getClassFiles: mutable.ArrayBuffer[String] = {
     classFiles
-  }
-
-  private def isAClassFile(arg: String): Boolean = {
-    val idx = arg.length - 6
-    arg.length >= 7 && arg.substring(idx).equals(".class")
   }
 
   private def isASwitch(arg: String): Boolean = {
@@ -63,6 +60,8 @@ class CmdlineArguments(args: Array[String]) {
           mainClass = arg.substring(arg.indexOf('=') + 1)
         } else if (arg.contains("-jvm:RT=")) {
           rtPath = arg.substring(arg.indexOf('=') + 1)
+        } else if (arg.contains("-jvm:classpath=")) {
+          classpath = arg.substring(15)
         } else {
           println(s"cannot recognize $arg, skipping")
         }

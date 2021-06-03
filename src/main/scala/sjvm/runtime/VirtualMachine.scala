@@ -180,20 +180,10 @@ class VirtualMachine(cmdlineArguments: CmdlineArguments) {
     frame.stack.pop()
   }
 
-  private def readyClass(className: String): Boolean = {
-    classes.get(className) match {
-      case Some(_) => return true
-      case _ =>
-        for (classFile <- classFiles) {
-          if (classFile.contains(s"$className.class")) {
-            var jclass = Parser.parse(classFile, cmdlineArguments.parseVerbose)
-            classes.put(jclass.name, jclass)
-            return true
-          }
-        }
-    }
-
-    false
+  private def readyClass(className: String): Unit = {
+    val pathToClassFile = s"${cmdlineArguments.classpath}/$className.class"
+    val jclass = Parser.parse(pathToClassFile, cmdlineArguments.parseVerbose)
+    classes.put(jclass.name, jclass)
   }
 
   private def resolveToNameType(cpstring: String): (String, String) = {
@@ -512,8 +502,7 @@ class VirtualMachine(cmdlineArguments: CmdlineArguments) {
         val cpool = getCpool(className)
 
         val instname = cpool.constantToString(cpool.getConstant(index))
-        if (!readyClass(instname))
-          throw new RuntimeException(s"could not lazy load class - $instname")
+        readyClass(instname)
 
         val instance = new Instance(instname, classes(instname).getFields)
         instance.init()
@@ -543,8 +532,7 @@ class VirtualMachine(cmdlineArguments: CmdlineArguments) {
   }
 
   private def evalMethod(className: String, methodName: String): Unit = {
-    if (!readyClass(className))
-      throw new RuntimeException(s"could not lazy load class - $className")
+    readyClass(className)
 
     val jmethod = classes(className).getMethod(methodName)
     if (jmethod == null)
